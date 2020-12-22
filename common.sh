@@ -40,14 +40,6 @@ CONST_LOG_WARN=2
 CONST_LOG_INFO=3
 CONST_LOG_DEBUG=4
 
-# https://rubygems.org/gems/tsp
-# https://rubygems.org/gems/ltb
-if [[ -x "$(command -v tsp)" ]] && [[ -x "$(command -v ltb)" ]]; then
-  exec 4> >(tsp | ltb)
-else
-  exec 4> >(echo)
-fi
-
 if [[ -z "${LOG_LEVEL-}" ]]; then
   LOG_LEVEL="INFO"
 fi
@@ -62,3 +54,12 @@ log() {
     printf "${EXEC_NAME} $$ ${LOG_TAG} ${colour}${level}${DEFAULT} ${message}\n" >&4
   fi
 }
+
+# https://rubygems.org/gems/tsp
+# https://rubygems.org/gems/ltb
+if [[ -x "$(command -v tsp)" ]] && [[ -x "$(command -v ltb)" ]]; then
+  exec 4> >(tsp | ltb)
+else
+  exec 4> >(echo)
+  log_debug "Could not find tsp or ltb in your PATH, defaulting to echo for output"
+fi
